@@ -5,6 +5,7 @@ const path = require('path');
 const axios = require('axios');
 const qs = require('querystring');
 const { OpenAI } = require("openai");
+////// Helper Functions
 
 // Function to initialize Microsoft Graph client
 const initGraphClient = (accessToken) => {
@@ -107,6 +108,7 @@ const getRelevantParts = async (text, query) => {
         return 'Error processing text with OpenAI' + error;
     }
 };
+////// Azure Function:
 // Below is what the Azure Function executes
 module.exports = async function (context, req) {
     const query = req.query.query || (req.body && req.body.query);
@@ -167,8 +169,9 @@ module.exports = async function (context, req) {
 
             return tokenWindows;
         };
+        // list is the result of the graph API search
         const list = await client.api('/search/query').post(requestBody);
-
+        // processList will iterate through the list async
         const processList = async () => {
             // This will go through and for each search response, grab the contents of the file and summarize with gpt-3.5-turbo
             const results = [];
@@ -211,7 +214,7 @@ module.exports = async function (context, req) {
             // Return no results found to the API if the Microsoft Graph API returns no results
             results = 'No results found';
         } else {
-            // If the Microsoft Graph API does return results, then run processList to iterate through.
+            // If the Microsoft Graph API does return results, then run processList to iterate through and sort by rank.
             results = await processList();
             results.sort((a, b) => a.rank - b.rank);
         }
