@@ -17,13 +17,13 @@ const initGraphClient = (accessToken) => {
 
 // Function to obtain OBO token. This will take the access token in request header (scoped to this Function App) and generate a new token to use for Graph API
 const getOboToken = async (userAccessToken) => {
-    const { TENANT_ID, CLIENT_ID, CLIENT_SECRET } = process.env;
+    const { TENANT_ID, CLIENT_ID, MICROSOFT_PROVIDER_AUTHENTICATION_SECRET } = process.env;
     const scope = 'https://graph.microsoft.com/.default';
     const oboTokenUrl = `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token`;
 
     const params = {
         client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
+        client_secret: MICROSOFT_PROVIDER_AUTHENTICATION_SECRET,
         grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
         assertion: userAccessToken,
         requested_token_use: 'on_behalf_of',
